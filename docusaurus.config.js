@@ -11,15 +11,15 @@ const config = {
   favicon: 'img/logo.ico',
 
   // Set the production url of your site here
-  url: 'https://sunny-pegasus-c1919e.netlify.app',
+  url: 'https://www.onmyojiautoscript.cn',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'runhey', // Usually your GitHub org/user name.
-  projectName: 'OnmyojiAutoScript-website', // Usually your repo name.
+  organizationName: 'nearaura', // Usually your GitHub org/user name.
+  projectName: 'oas-website', // Usually your repo name.
   deploymentBranch: 'gh-pages',
 
   onBrokenLinks: 'throw',
@@ -43,7 +43,7 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/runhey/OnmyojiAutoScript-website/blob/master/',
+            'https://github.com/nearaura/oas-website/blob/master/',
         },
         blog: {
           showReadingTime: true,
