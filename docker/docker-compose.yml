@@ -39,7 +39,7 @@ services:
       mongo:
         condition: service_healthy
     ports:
-      - "127.0.0.1:4322:4322"
+      - "0.0.0.0:4322:4322"
 
   frontend:
     image: oas-website-frontend:latest
