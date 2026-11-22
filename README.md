@@ -56,11 +56,34 @@ pnpm exec tsx scripts/reindex-main.ts <published-commit>
 caddy run --config .\Caddyfile
 ```
 
-## Cloudflare Pages + Docker 后端部署
+## Cloudflare Workers/Pages + Docker 后端部署
 
-生产环境可以将公开文档部署到 Cloudflare Pages，将 Tina 后端和 MongoDB 部署到自己的服务器。
+生产环境可以将公开文档部署到 Cloudflare Workers 或 Cloudflare Pages，将 Tina 后端和 MongoDB 部署到自己的服务器。
 
-### 1. Cloudflare Pages
+### 1. Cloudflare Workers
+
+仓库中的 `worker/index.ts` 会把 `/api/tina/*` 和 `/tina-island/*` 转发到后端，其余请求由 Worker 静态资源绑定提供。Worker 必须配置运行时变量 `BACKEND_ORIGIN`，它是后端的公开 origin（只写协议、域名和可选端口，不要写 `/api/tina` 路径），例如：
+
+```text
+BACKEND_ORIGIN=https://api.example.com
+```
+
+当前阿里云服务器可使用 `http://47.119.160.194.nip.io:4322` 作为临时公网主机名。它要求服务器安全组放行 TCP 4322，生产环境仍建议换成自己的 HTTPS 域名。
+
+如果使用 Wrangler，可以先构建静态资源，再写入 Worker 变量并部署：
+
+```bash
+pnpm install --frozen-lockfile
+pnpm build
+pnpm dlx wrangler secret put BACKEND_ORIGIN
+pnpm dlx wrangler deploy
+```
+
+`wrangler secret put` 执行时输入实际的后端 origin。这个值也可以在 Cloudflare Dashboard 的 **Workers & Pages → oas-website → Settings → Variables and Secrets** 中添加为 `BACKEND_ORIGIN`，保存后重新部署 Worker。后端必须能从公网访问，并且要提供 `/api/tina/*` 和 `/tina-island/*`；只监听服务器 `127.0.0.1` 的地址不能直接作为此变量。推荐通过 Caddy 或 Cloudflare Tunnel 暴露 HTTPS 443，再把对应的域名填入 `BACKEND_ORIGIN`，不要填 Worker 自己的 `workers.dev` 地址。
+
+`BACKEND_ORIGIN` 是 Worker 的运行时变量，不是前端构建变量，也不会从后端服务器的 `.env.production` 自动读取。未配置时，Worker 会对上述代理路径返回 `500 BACKEND_ORIGIN is not configured for this Worker`。
+
+### 2. Cloudflare Pages
 
 在 Cloudflare Pages 中配置：
 
@@ -89,7 +112,7 @@ GITHUB_BRANCH=tina
 
 这样浏览器仍然以 Cloudflare Pages 域名访问 Tina，Cookie 和认证请求保持同源。
 
-### 2. Docker 后端
+### 3. Docker 后端
 
 Docker 相关文件都在 [docker/](docker/)：`Dockerfile`、`Dockerfile.frontend`、`docker-compose.yml` 和 Nginx 配置。以下命令都在仓库根目录执行。`.dockerignore` 仍在仓库根目录，因为 Docker 构建上下文是仓库根目录。
 
@@ -134,7 +157,7 @@ sudo docker load -i oas-backend.tar
 docker compose -f docker/docker-compose.yml --env-file .env.production up -d --no-build --force-recreate backend
 ```
 
-MongoDB 数据保存在 `mongo_data` Volume 中，不会随着后端容器重建而丢失。MongoDB 只绑定在 Docker 网络中，后端端口只绑定到服务器本机的 `127.0.0.1:4322`。
+MongoDB 数据保存在 `mongo_data` Volume 中，不会随着后端容器重建而丢失。后端服务监听服务器的 `4322` 端口，Worker 可以通过服务器公网入口转发 `/api/tina/*` 和 `/tina-island/*`。
 
 服务器上的 Caddy 可以参考 [docker/Caddyfile.example](docker/Caddyfile.example)，把 `api.example.com` 反向代理到 `127.0.0.1:4322`。不用 Caddy 时，可以用 Cloudflare Tunnel 把 `api.example.com` 指向 `http://127.0.0.1:4322`。
 
@@ -158,7 +181,7 @@ docker compose -f docker/docker-compose.yml --env-file .env.production exec -T m
 
 `MONGODB_URI` 中的用户名和密码如果包含 URI 保留字符，需要先进行 URL 编码。生产环境不要提交 `.env.production`。
 
-### 3. Docker 前端（可选）
+### 4. Docker 前端（可选）
 
 如果要在服务器上单独部署一个前端容器：
 
@@ -183,7 +206,7 @@ sudo docker load -i oas-images.tar
 docker compose -f docker/docker-compose.yml --env-file .env.production --profile frontend up -d --no-build
 ```
 
-### 4. 发布后的 Tina 索引
+### 5. 发布后的 Tina 索引
 
 文档合并到 GitHub 并完成 Cloudflare Pages 发布后，在包含对应发布版本的工作区执行：
 
