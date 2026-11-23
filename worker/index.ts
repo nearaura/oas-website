@@ -38,7 +38,7 @@ export default {
 				headers.delete(header);
 			}
 		}
-		if (isIsland) headers.set('accept-encoding', 'identity');
+		if (isIsland || isTinaApi) headers.set('accept-encoding', 'identity');
 
 		try {
 			// Cloudflare's incoming body is a one-shot stream. Buffer it before
