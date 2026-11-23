@@ -137,3 +137,25 @@ curl.exe -i --max-time 30 -X POST `
 - [Cloudflare Error 520 官方说明](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-520/)
 - [Cloudflare Workers Fetch API](https://developers.cloudflare.com/workers/runtime-apis/fetch/)
 - [Cloudflare Tunnel 官方说明](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/)
+
+## 外部检索补充
+
+Cloudflare 官方文档给出的 520 排查范围与本次复现高度重合：过大的 Cookie 请求头、空或格式异常的源站响应、源站提前关闭连接，以及 Cloudflare 无法解析源站响应。当前还没有测量登录请求的完整 Cookie 头大小，因此“超过 128 KB”只能作为需要验证的可能性，不能作为已经确认的根因。
+
+官方建议使用 Origin Analytics 对照 `originResponseStatus` 和 `edgeResponseStatus`。如果源站状态是 200，而边缘状态是 520，重点应检查响应是否在边缘解析阶段被判定为 malformed，例如响应头过大、响应体提前结束或 HTTP framing 不完整。如果 `OriginResponseStatus` 为 0 且缓存状态是 miss/expired，则更接近连接失败或源站没有返回 HTTP 响应。
+
+外部检索没有找到与本项目完全相同的 Tina + Astro + Express + Worker 组合案例。现有公开案例和官方分类都指向同一组验证方向：记录源站请求头大小、分别比较带 Cookie 与不带 Cookie 的响应、确认响应的 `Content-Length`/分块结束状态，并查看源站在对应 Ray ID 时间点的日志。
+
+下一步最有价值的验证顺序是：
+
+1. 在 Worker 中记录请求头总字节数和源站响应状态，不记录 Cookie 值。
+2. 用同一份 GraphQL body 分别发送无 Cookie、仅 Authorization、Authorization 加 Cookie 三种请求。
+3. 在后端日志中按请求 ID 对照 520 请求是否进入 Express、是否在 Clerk 校验或响应写出阶段异常。
+4. 完成 `experimentalDisableStreaming: true` 的后端容器重建，再比较同一接口的响应头和边缘状态。
+5. 在 Cloudflare Origin Analytics 中确认 `originResponseStatus` 与 `edgeResponseStatus` 的差异。
+
+来源：
+
+- [Cloudflare Error 520 的常见原因与 Origin Analytics](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-520/)
+- [Cloudflare Workers Fetch API](https://developers.cloudflare.com/workers/runtime-apis/fetch/)
+- [Cloudflare Tunnel 的连接模型](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/)
