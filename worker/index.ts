@@ -33,7 +33,11 @@ export default {
 		if (!hasBody) headers.delete('content-length');
 		const isIsland = url.pathname.startsWith('/tina-island/');
 		const isTinaApi = url.pathname.startsWith('/api/tina/');
-		if (isTinaApi) headers.delete('cookie');
+		if (isTinaApi) {
+			for (const header of ['cookie', 'origin', 'referer', 'priority', 'sec-fetch-dest', 'sec-fetch-mode', 'sec-fetch-site', 'sec-fetch-user']) {
+				headers.delete(header);
+			}
+		}
 		if (isIsland) headers.set('accept-encoding', 'identity');
 
 		try {
