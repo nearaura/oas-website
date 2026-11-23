@@ -3,7 +3,7 @@
 	"compatibility_date": "2026-11-21",
 	"main": "./worker/index.ts",
 	"vars": {
-		"BACKEND_ORIGIN": "http://47.119.160.194.nip.io:4322"
+		"BACKEND_ORIGIN": "https://launches-tourism-entrepreneur-contributing.trycloudflare.com"
 	},
 	"assets": {
 		"directory": "./dist/client",

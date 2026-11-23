@@ -81,14 +81,6 @@ app.use((req, res, next) => {
 // 允许 Express 解析 JSON 请求体，最大 10 MB。
 app.use(express.json({ limit: '10mb' }));
 
-// Keep Tina responses on a connection Cloudflare can finish reliably.
-app.use((req, res, next) => {
-	if (req.path.startsWith('/api/tina/') || req.path.startsWith('/tina-island/')) {
-		res.setHeader('connection', 'close');
-	}
-	next();
-});
-
 const isLocal = process.env.TINA_PUBLIC_IS_LOCAL === 'true';
 
 const clerkAuth = isLocal
