@@ -26,12 +26,17 @@ export default {
 
 		const headers = new Headers(request.headers);
 		headers.delete('host');
+		for (const header of ['connection', 'keep-alive', 'proxy-connection', 'te', 'trailer', 'transfer-encoding', 'upgrade']) {
+			headers.delete(header);
+		}
+		const hasBody = request.method !== 'GET' && request.method !== 'HEAD' && request.headers.get('content-length') !== '0';
+		if (!hasBody) headers.delete('content-length');
 
 		try {
 			const response = await fetch(upstream, {
 				method: request.method,
 				headers,
-				body: request.method === 'GET' || request.method === 'HEAD' ? undefined : request.body,
+				body: hasBody ? request.body : undefined,
 				redirect: 'manual',
 			});
 			const responseHeaders = new Headers(response.headers);
