@@ -28,11 +28,20 @@ export default {
 		headers.delete('host');
 
 		try {
-			return await fetch(upstream, {
+			const response = await fetch(upstream, {
 				method: request.method,
 				headers,
 				body: request.method === 'GET' || request.method === 'HEAD' ? undefined : request.body,
 				redirect: 'manual',
+			});
+			const responseHeaders = new Headers(response.headers);
+			for (const header of ['connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization', 'te', 'trailer', 'transfer-encoding', 'upgrade']) {
+				responseHeaders.delete(header);
+			}
+			return new Response(response.body, {
+				status: response.status,
+				statusText: response.statusText,
+				headers: responseHeaders,
 			});
 		} catch (error) {
 			return new Response(`Backend unreachable: ${error instanceof Error ? error.message : String(error)}`, { status: 502 });
