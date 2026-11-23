@@ -41,16 +41,21 @@ export default {
 		if (isIsland) headers.set('accept-encoding', 'identity');
 
 		try {
+			// Cloudflare's incoming body is a one-shot stream. Buffer it before
+			// forwarding so the origin receives a complete, replayable request.
+			// This also keeps the retry path safe when the first origin response is
+			// a transient failure.
+			const requestBody = hasBody ? await request.arrayBuffer() : undefined;
 			const fetchOptions = {
 				method: request.method,
 				headers,
-				body: hasBody ? request.body : undefined,
+				body: requestBody,
 				redirect: 'manual',
 			} as RequestInit;
 			let response = await fetch(upstream, fetchOptions);
-			if (isIsland && !hasBody && response.status >= 500) {
+			if ((isIsland || isTinaApi) && response.status >= 500) {
 				await response.body?.cancel();
-				response = await fetch(upstream, { ...fetchOptions, body: undefined });
+				response = await fetch(upstream, fetchOptions);
 			}
 			const responseHeaders = new Headers(response.headers);
 			for (const header of ['connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization', 'te', 'trailer', 'transfer-encoding', 'upgrade']) {
