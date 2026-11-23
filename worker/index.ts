@@ -38,7 +38,7 @@ export default {
 			for (const header of ['connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization', 'te', 'trailer', 'transfer-encoding', 'upgrade']) {
 				responseHeaders.delete(header);
 			}
-			return new Response(response.body, {
+			return new Response(await response.arrayBuffer(), {
 				status: response.status,
 				statusText: response.statusText,
 				headers: responseHeaders,
