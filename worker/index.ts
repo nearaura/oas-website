@@ -34,7 +34,15 @@ export default {
 		const isIsland = url.pathname.startsWith('/tina-island/');
 		const isTinaApi = url.pathname.startsWith('/api/tina/');
 		if (isTinaApi) {
-			for (const header of ['cookie', 'origin', 'referer', 'priority', 'sec-fetch-dest', 'sec-fetch-mode', 'sec-fetch-site', 'sec-fetch-user']) {
+			const tinaToken = headers
+				.get('cookie')
+				?.split(';')
+				.map((part) => part.trim())
+				.find((part) => part.startsWith('tina_clerk_token='));
+			headers.delete('authorization');
+			headers.delete('cookie');
+			if (tinaToken) headers.set('cookie', tinaToken);
+			for (const header of ['origin', 'referer', 'priority', 'sec-fetch-dest', 'sec-fetch-mode', 'sec-fetch-site', 'sec-fetch-user']) {
 				headers.delete(header);
 			}
 		}
