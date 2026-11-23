@@ -43,6 +43,7 @@ COPY --chown=node:node --from=build /app/node_modules ./node_modules
 COPY --chown=node:node --from=build /app/packages ./packages
 COPY --chown=node:node --from=build /app/dist ./dist
 COPY --chown=node:node --from=build /app/tina ./tina
+COPY --chown=node:node --from=build /app/src/content/docs ./src/content/docs
 COPY --chown=node:node --from=build /app/server.ts /app/tsconfig.json /app/package.json ./
 
 ENV pnpm_config_verify_deps_before_run=false

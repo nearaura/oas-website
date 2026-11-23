@@ -9,13 +9,24 @@ import { createWorkspace, getWorkspace, touchWorkspace, INACTIVE_MS, type Worksp
 import { purgeWorkspace } from './purge';
 import { logger } from '../logger';
 import { staleEditor } from '../editor/edit-revision';
-import { getPublishedIndex } from '../content/published-index';
+import { getPublishedIndex, isGitCommit } from '../content/published-index';
 
 const owner = process.env.GITHUB_OWNER!;
 const repo = process.env.GITHUB_REPO!;
 const baseBranch = process.env.GITHUB_BRANCH || 'tina';
 
+function draftBranchName() {
+	const timestamp = new Date()
+		.toISOString()
+		.replace(/[-:]/g, '')
+		.replace(/\.\d{3}Z$/, 'Z');
+	return `oas-draft-${timestamp}-${randomUUID().slice(0, 8)}`;
+}
+
 async function newWorkspace(ctx: RequestContext, baseSha?: string): Promise<Workspace> {
+	// A non-commit marker (for example the old "startup" placeholder) cannot be
+	// used as a Git parent. Fall back to the current base branch head.
+	if (!isGitCommit(baseSha)) baseSha = undefined;
 	try {
 		baseSha ??= (await getRefSha(ctx.githubToken!, owner, repo, baseBranch)) ?? undefined;
 	} catch (error) {
@@ -27,7 +38,7 @@ async function newWorkspace(ctx: RequestContext, baseSha?: string): Promise<Work
 		userId: ctx.userId!,
 		login: ctx.login!,
 		fork: `${ctx.login}/${repo}`,
-		branch: `oas-draft-${randomUUID()}`,
+		branch: draftBranchName(),
 		baseBranch,
 		baseSha,
 	});

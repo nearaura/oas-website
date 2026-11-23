@@ -1,6 +1,6 @@
 import { commitOps } from '../github/commit';
 import { getGithubIdentity } from '../auth/github-identity';
-import { withLock } from './lock';
+import { tryAcquireLock, releaseLock } from './lock';
 import { purgeWorkspace } from './purge';
 import { syncPrState } from '../pull-request/pr-sync';
 import { findWorkspaces, getWorkspace, INACTIVE_MS } from './workspace';
@@ -20,7 +20,9 @@ async function tokenFor(userId: string) {
 }
 
 export async function sweepWorkspace(userId: string, now: Date, resolveIdentity = tokenFor) {
-	await withLock(userId, async () => {
+	const owner = await tryAcquireLock(userId);
+	if (!owner) return;
+	try {
 		let workspace = await getWorkspace(userId);
 		if (!workspace) return;
 		const expired = !workspace.prNumber && workspace.updatedAt.getTime() < now.getTime() - INACTIVE_MS;
@@ -42,7 +44,9 @@ export async function sweepWorkspace(userId: string, now: Date, resolveIdentity 
 			return;
 		}
 		if (expired) await purgeWorkspace(workspace, token, 'expired');
-	});
+	} finally {
+		await releaseLock(userId, owner);
+	}
 }
 
 export async function runSweep(now = new Date()): Promise<void> {

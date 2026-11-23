@@ -21,6 +21,7 @@ import { getOperationType } from './tina/graphql-operation';
 import { assertEditRevision, EDIT_REVISION_HEADER, getEditRevision } from './tina/editor/edit-revision';
 import { getWorkspace } from './tina/workspace/workspace';
 import { getPublishedIndex } from './tina/content/published-index';
+import { ensurePublishedIndex } from './tina/content/ensure-index';
 
 // Astro's generated entry can start its own listener unless this is disabled
 // before importing it. Express owns the production listener in this setup.
@@ -173,7 +174,7 @@ const guardedClient = {
 					});
 				}
 				return result;
-			});
+			}, 2_000);
 		} catch (error) {
 			// 清空暂存操作，并记录失败日志，不提交工作区
 			logger.error('tina.save.failed', { error });
@@ -230,6 +231,19 @@ app.use((error: unknown, req: express.Request, res: express.Response, next: expr
 	if (res.headersSent) return next(error);
 	res.status(500).json({ error: 'internal_error', message: 'Unexpected server error' });
 });
+
+if (!isLocal) {
+	try {
+		const published = await ensurePublishedIndex();
+		logger.info('tina.index.ready', {
+			namespace: published.namespace,
+			created: published.created,
+		});
+	} catch (error) {
+		logger.fatal('tina.index.startup_failed', { error });
+		process.exit(1);
+	}
+}
 
 app.listen(port, () => {
 	logger.info('server.started', { port, isLocal });

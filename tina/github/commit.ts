@@ -2,6 +2,7 @@ import { commitFiles, getRefSha, DraftBranchChangedError, GithubApiError } from 
 import type { BufferedOp, RequestContext } from '../editor/context';
 import { clearGithubIdentity } from '../auth/github-identity';
 import { updateWorkspace, type Workspace } from '../workspace/workspace';
+import { isGitCommit } from '../content/published-index';
 import { logger } from '../logger';
 
 const owner = process.env.GITHUB_OWNER!;
@@ -60,7 +61,7 @@ export async function commitOps(
 		if (!workspace.branch.startsWith('oas-draft-')) {
 			throw new GithubApiError(409, 'The workspace uses a legacy branch');
 		}
-		let commitBase = workspace.baseSha;
+		let commitBase = isGitCommit(workspace.baseSha) ? workspace.baseSha : undefined;
 		if (!commitBase) {
 			commitBase = (await getRefSha(identity.token, owner, repo, baseBranch)) ?? undefined;
 			if (!commitBase) throw new Error(`Base branch ${baseBranch} was not found`);

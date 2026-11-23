@@ -129,7 +129,7 @@ export function createTinaApi(options: Options) {
 							return result === 'pending' ? await getWorkspace(identity.userId) : null;
 						}
 						return synced;
-					});
+					}, 1_000);
 				} catch (error) {
 					if (!(error instanceof HttpError && error.code === 'workspace_busy')) {
 						logger.warn('tina.pr.status_check_failed', { error });
@@ -225,7 +225,7 @@ export function createTinaApi(options: Options) {
 					prUrl: pull.html_url,
 					submittedAt: new Date(),
 				});
-			});
+			}, 2_000);
 
 			logger.info('tina.submit.completed', {
 				state: workspace.state,
@@ -263,7 +263,7 @@ export function createTinaApi(options: Options) {
 					return 'pending';
 				}
 				return purgeWorkspace(workspace, identity.token);
-			});
+			}, 2_000);
 
 			logger.info('tina.discard.completed', { pending: result === 'pending' });
 			res.json({ discarded: true, pending: result === 'pending' });
