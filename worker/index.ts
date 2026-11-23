@@ -32,19 +32,21 @@ export default {
 		const hasBody = request.method !== 'GET' && request.method !== 'HEAD' && request.headers.get('content-length') !== '0';
 		if (!hasBody) headers.delete('content-length');
 		const isIsland = url.pathname.startsWith('/tina-island/');
+		const isTinaApi = url.pathname.startsWith('/api/tina/');
 		if (isIsland) headers.set('accept-encoding', 'identity');
 
 		try {
+			const requestBody = hasBody ? await request.arrayBuffer() : undefined;
 			const fetchOptions = {
 				method: request.method,
 				headers,
-				body: hasBody ? request.body : undefined,
+				body: requestBody,
 				redirect: 'manual',
 			} as RequestInit;
 			let response = await fetch(upstream, fetchOptions);
-			if (isIsland && !hasBody && response.status >= 500) {
+			if ((isIsland || isTinaApi) && response.status >= 500) {
 				await response.body?.cancel();
-				response = await fetch(upstream, { ...fetchOptions, body: undefined });
+				response = await fetch(upstream, fetchOptions);
 			}
 			const responseHeaders = new Headers(response.headers);
 			for (const header of ['connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization', 'te', 'trailer', 'transfer-encoding', 'upgrade']) {
