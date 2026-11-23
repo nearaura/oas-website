@@ -40,7 +40,7 @@ const development = [
 export default defineConfig({
 	site: 'https://www.onmyojiautoscript.cn',
 	output: 'static',
-	adapter: node({ mode: 'middleware' }),
+	adapter: node({ mode: 'middleware', experimentalDisableStreaming: true }),
 	integrations: [
 		tina(),
 		starlight({
