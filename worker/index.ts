@@ -67,7 +67,7 @@ export default {
 				await response.body?.cancel();
 			}
 			const responseHeaders = new Headers(response.headers);
-			for (const header of ['connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization', 'te', 'trailer', 'transfer-encoding', 'upgrade']) {
+			for (const header of ['connection', 'content-encoding', 'content-length', 'keep-alive', 'proxy-authenticate', 'proxy-authorization', 'te', 'trailer', 'transfer-encoding', 'upgrade']) {
 				responseHeaders.delete(header);
 			}
 			if (isIsland) {
