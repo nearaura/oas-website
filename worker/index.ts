@@ -35,12 +35,17 @@ export default {
 		if (isIsland) headers.set('accept-encoding', 'identity');
 
 		try {
-			const response = await fetch(upstream, {
+			const fetchOptions = {
 				method: request.method,
 				headers,
 				body: hasBody ? request.body : undefined,
 				redirect: 'manual',
-			});
+			} as RequestInit;
+			let response = await fetch(upstream, fetchOptions);
+			if (isIsland && !hasBody && response.status >= 500) {
+				await response.body?.cancel();
+				response = await fetch(upstream, { ...fetchOptions, body: undefined });
+			}
 			const responseHeaders = new Headers(response.headers);
 			for (const header of ['connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization', 'te', 'trailer', 'transfer-encoding', 'upgrade']) {
 				responseHeaders.delete(header);
