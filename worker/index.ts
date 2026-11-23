@@ -31,6 +31,8 @@ export default {
 		}
 		const hasBody = request.method !== 'GET' && request.method !== 'HEAD' && request.headers.get('content-length') !== '0';
 		if (!hasBody) headers.delete('content-length');
+		const isIsland = url.pathname.startsWith('/tina-island/');
+		if (isIsland) headers.set('accept-encoding', 'identity');
 
 		try {
 			const response = await fetch(upstream, {
@@ -42,6 +44,16 @@ export default {
 			const responseHeaders = new Headers(response.headers);
 			for (const header of ['connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization', 'te', 'trailer', 'transfer-encoding', 'upgrade']) {
 				responseHeaders.delete(header);
+			}
+			if (isIsland) {
+				return new Response(await response.text(), {
+					status: response.status,
+					statusText: response.statusText,
+					headers: {
+						'cache-control': 'no-store',
+						'content-type': response.headers.get('content-type') ?? 'text/html; charset=utf-8',
+					},
+				});
 			}
 			return new Response(await response.arrayBuffer(), {
 				status: response.status,
