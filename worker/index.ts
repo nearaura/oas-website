@@ -30,7 +30,7 @@ export default {
 			headers.delete(header);
 		}
 		const hasBody = request.method !== 'GET' && request.method !== 'HEAD' && request.headers.get('content-length') !== '0';
-		if (!hasBody) headers.delete('content-length');
+		headers.delete('content-length');
 		const isIsland = url.pathname.startsWith('/tina-island/');
 		const isTinaApi = url.pathname.startsWith('/api/tina/');
 		if (isTinaApi) {
