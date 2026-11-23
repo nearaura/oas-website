@@ -60,10 +60,11 @@ export default {
 				body: requestBody,
 				redirect: 'manual',
 			} as RequestInit;
-			let response = await fetch(upstream, fetchOptions);
-			if ((isIsland || isTinaApi) && response.status >= 500) {
-				await response.body?.cancel();
+			let response: Response;
+			for (let attempt = 0; ; attempt += 1) {
 				response = await fetch(upstream, fetchOptions);
+				if (!(isIsland || isTinaApi) || response.status < 500 || attempt >= 2) break;
+				await response.body?.cancel();
 			}
 			const responseHeaders = new Headers(response.headers);
 			for (const header of ['connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization', 'te', 'trailer', 'transfer-encoding', 'upgrade']) {
