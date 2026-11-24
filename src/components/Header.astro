@@ -1,0 +1,316 @@
+---
+import config from "virtual:starlight/user-config";
+import { logos } from "virtual:starlight/user-images";
+import Search from "@six-tech/starlight-theme-six/overrides/Search.astro";
+import LanguageSelect from "@astrojs/starlight/components/LanguageSelect.astro";
+import ThemeSelect from "@six-tech/starlight-theme-six/overrides/ThemeSelect.astro";
+
+const shouldRenderSearch =
+  config.pagefind ||
+  config.components.Search !== "@astrojs/starlight/components/Search.astro";
+const pathname = Astro.url.pathname;
+const isUserManual =
+  pathname === "/user-manual" || pathname.startsWith("/user-manual/");
+const isDevelopment =
+  pathname === "/development" || pathname.startsWith("/development/");
+---
+
+<div class="header-left">
+  <a href="/" class="site-title">
+    <img
+      class="logo-size"
+      alt={config.logo?.alt ?? "OnmyojiAutoScript"}
+      src={logos.dark?.src}
+      width={logos.dark?.width}
+      height={logos.dark?.height}
+    />
+    <span class="title-text">OnmyojiAutoScript</span>
+  </a>
+  <div class="search-slot">{shouldRenderSearch && <Search />}</div>
+</div>
+
+<button class="show-modal" popovertargetaction="toggle" popovertarget="drawer">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke-width="1.5"
+    stroke="currentColor"
+    aria-hidden="true"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M3.75 9h16.5m-16.5 6.75h16.5"
+    ></path>
+  </svg>
+  <span class="sr-only">Toggle Menu</span>
+</button>
+
+<div class="header-right">
+  <nav class="oas-nav" aria-label="主导航">
+    <a
+      href="/user-manual/getting-started/"
+      aria-current={isUserManual ? "page" : undefined}
+    >
+      用户手册
+    </a>
+    <a
+      href="/development/preamble/"
+      aria-current={isDevelopment ? "page" : undefined}
+    >
+      开发文档
+    </a>
+    <a href="https://github.com/nearaura/OASX" rel="external">
+      OASX
+    </a>
+  </nav>
+
+  <nav class="header-nav">
+    <div>
+      <a
+        href="/admin"
+        class="sl-flex button edit-site-icon-link"
+        data-variant="ghost"
+        aria-label="编辑此站"
+        title="编辑此站"
+      >
+        <svg
+          aria-hidden="true"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#f59e0b"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 20h9"></path>
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+        </svg>
+        <span class="sr-only">编辑此站</span>
+      </a>
+    </div>
+    <div>
+      <a
+        href="https://github.com/nearaura/OnmyojiAutoScript"
+        rel="me"
+        class="sl-flex button github-link"
+        data-variant="ghost"
+        aria-label="GitHub"
+        title="GitHub"
+      >
+        <svg
+          aria-hidden="true"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"></path>
+        </svg>
+        <span class="sr-only">GitHub</span>
+      </a>
+    </div>
+    <div class="custom-social-links" aria-label="社交平台">
+      <a
+        href="https://t.me/"
+        rel="me"
+        class="sl-flex button"
+        data-variant="ghost"
+        aria-label="电报"
+        title="电报"
+      >
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24">
+          <path
+            fill="#26A5E4"
+            d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"
+          ></path>
+        </svg>
+        <span class="sr-only">电报</span>
+      </a>
+      <a
+        href="https://qm.qq.com/"
+        rel="me"
+        class="sl-flex button"
+        data-variant="ghost"
+        aria-label="QQ"
+        title="QQ"
+      >
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24">
+          <path
+            fill="#12B7F5"
+            d="M21.395 15.035a40 40 0 0 0-.803-2.264l-1.079-2.695c.001-.032.014-.562.014-.836C19.526 4.632 17.351 0 12 0S4.474 4.632 4.474 9.241c0 .274.013.804.014.836l-1.08 2.695a39 39 0 0 0-.802 2.264c-1.021 3.283-.69 4.643-.438 4.673.54.065 2.103-2.472 2.103-2.472 0 1.469.756 3.387 2.394 4.771-.612.188-1.363.479-1.845.835-.434.32-.379.646-.301.778.343.578 5.883.369 7.482.189 1.6.18 7.14.389 7.483-.189.078-.132.132-.458-.301-.778-.483-.356-1.233-.646-1.846-.836 1.637-1.384 2.393-3.302 2.393-4.771 0 0 1.563 2.537 2.103 2.472.251-.03.581-1.39-.438-4.673"
+          ></path>
+        </svg>
+        <span class="sr-only">QQ</span>
+      </a>
+      <a
+        href="https://space.bilibili.com/439055872"
+        rel="me"
+        class="sl-flex button"
+        data-variant="ghost"
+        aria-label="Bilibili"
+        title="Bilibili"
+      >
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24">
+          <path
+            fill="#00AEEC"
+            d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.4-.96.249-.249.56-.373.933-.373Z"
+          ></path>
+        </svg>
+        <span class="sr-only">Bilibili</span>
+      </a>
+      <a
+        href="https://discord.com/"
+        rel="me"
+        class="sl-flex button"
+        data-variant="ghost"
+        aria-label="Discord"
+        title="Discord"
+      >
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24">
+          <path
+            fill="#5865F2"
+            d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0785-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 0 1-.0066.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"
+          ></path>
+        </svg>
+        <span class="sr-only">Discord</span>
+      </a>
+    </div>
+    <div class="theme-toggle">
+      <ThemeSelect />
+    </div>
+    <div>
+      <LanguageSelect />
+    </div>
+  </nav>
+</div>
+
+<style>
+  .header-left {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .site-title {
+    gap: 1rem;
+    align-items: center;
+    display: flex;
+    margin-right: 2rem;
+    margin-left: 1rem;
+    color: inherit;
+    text-decoration: inherit;
+    white-space: nowrap;
+  }
+
+  .logo-size {
+    width: auto;
+    height: 2.75rem;
+  }
+
+  .title-text {
+    font-weight: 700;
+    display: inline-block;
+  }
+
+  .search-slot {
+    margin-left: 6rem;
+    flex-shrink: 0;
+  }
+
+  .header-right {
+    gap: 0.5rem;
+    align-items: center;
+    display: flex;
+    margin-left: auto;
+  }
+
+  .oas-nav {
+    gap: 1rem;
+    align-items: center;
+    display: flex;
+    white-space: nowrap;
+  }
+
+  .oas-nav a {
+    color: var(--muted-foreground);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .edit-site-icon-link {
+    color: #f59e0b !important;
+  }
+
+  .oas-nav a:hover,
+  .oas-nav a:focus-visible,
+  .oas-nav a[aria-current="page"] {
+    color: var(--accent-foreground);
+  }
+
+  .header-nav {
+    gap: 0.125rem;
+    align-items: center;
+    display: flex;
+  }
+
+  .custom-social-links {
+    gap: 0.125rem;
+    align-items: center;
+    display: flex;
+  }
+
+  .custom-social-links a:hover,
+  .custom-social-links a:focus-visible {
+    background-color: #f1f3f5 !important;
+  }
+
+  .github-link:hover,
+  .github-link:focus-visible,
+  .edit-site-icon-link:hover,
+  .edit-site-icon-link:focus-visible,
+  :global(.theme-toggle starlight-theme-six-select button:hover),
+  :global(.theme-toggle starlight-theme-six-select button:focus-visible) {
+    background-color: #f1f3f5 !important;
+  }
+
+  :global(.theme-toggle starlight-theme-six-select button) {
+    color: #6366f1 !important;
+  }
+
+  .show-modal {
+    all: unset;
+    display: inline-flex;
+    margin-right: 0.5rem;
+    margin-left: -0.5rem;
+    height: 2rem;
+    width: 2rem;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .show-modal > svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  @media (max-width: 767px) {
+    .header-left {
+      display: none;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .show-modal {
+      display: none;
+    }
+  }
+</style>

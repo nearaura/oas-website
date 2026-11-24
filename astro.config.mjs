@@ -44,6 +44,7 @@ export default defineConfig({
 	integrations: [
 		tina(),
 		starlight({
+			customCss: ['./src/styles/custom.css'],
 			plugins: [
 				starlightThemeSix({
 					navLinks: [
@@ -55,7 +56,7 @@ export default defineConfig({
 			title: 'OnmyojiAutoScript',
 			description: '阴阳师小助手，一键托管。',
 			logo: {
-				src: './src/assets/logo.svg',
+				src: './src/assets/logo-head.png',
 				alt: 'OnmyojiAutoScript',
 				replacesTitle: false,
 			},
@@ -70,6 +71,7 @@ export default defineConfig({
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/runhey/OnmyojiAutoScript' },
 			],
 			components: {
+				Header: './src/components/Header.astro',
 				MarkdownContent: './src/components/TinaMarkdownContent.astro',
 				PageTitle: './src/components/TinaPageTitle.astro',
 			},

@@ -1,0 +1,10 @@
+/* Project-level Starlight adjustments. */
+.entry-title {
+	font-size: 1.125rem !important;
+	line-height: 1.5rem !important;
+}
+
+.sl-markdown-content > .card-grid {
+	margin-top: clamp(2rem, 5vw, 4rem);
+}
+

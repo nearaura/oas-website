@@ -5,7 +5,8 @@ template: splash
 hero:
   tagline: 阴阳师小助手，一键托管
   image:
-    file: ../../assets/oas-overview.png
+    file: /public/images/202312292047939.png
+    alt: OnmyojiAutoScript 任务调度与日志界面
   actions:
     - text: 开始使用
       link: /user-manual/getting-started/
@@ -17,7 +18,7 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-<CardGrid stagger>
+<CardGrid>
   <Card title="用户手册" icon="open-book">
     从安装、模拟器连接到任务配置，快速开始使用 OnmyojiAutoScript。
     [查看用户手册](/user-manual/getting-started/)
@@ -28,6 +29,6 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
   </Card>
   <Card title="项目仓库" icon="github">
     在 GitHub 查看源码、提交 Issue 或参与开发。
-    [打开 GitHub](https://github.com/runhey/OnmyojiAutoScript)
+    [打开 GitHub](https://github.com/nearaura/OnmyojiAutoScript)
   </Card>
 </CardGrid>
